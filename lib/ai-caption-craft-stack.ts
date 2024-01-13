@@ -1,8 +1,7 @@
 import { Stack, StackProps, Duration, RemovalPolicy, CfnOutput } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Bucket, BlockPublicAccess, HttpMethods } from 'aws-cdk-lib/aws-s3';
-
-
+import { Table, AttributeType } from 'aws-cdk-lib/aws-dynamodb';
 
 export class AiCaptionCraftStack extends Stack {
 
@@ -12,7 +11,7 @@ export class AiCaptionCraftStack extends Stack {
     // =====================================================================================
     // Image Bucket
     // =====================================================================================
-    const imageBucketName = "cdk-rekn-imgagebucket"
+    const imageBucketName = "cdk-rekn-imagebucket"
     const imageBucket = new Bucket(this, imageBucketName, {
       removalPolicy: RemovalPolicy.DESTROY
     });
@@ -39,6 +38,14 @@ export class AiCaptionCraftStack extends Stack {
       allowedOrigins: ["*"],
       allowedHeaders: ["*"],
       maxAge: 3000
+    });
+
+    // =====================================================================================
+    // Amazon DynamoDB table for storing image labels
+    // =====================================================================================
+    const table = new Table(this, 'ImageLabels', {
+      partitionKey: { name: 'image', type: AttributeType.STRING },
+      removalPolicy: RemovalPolicy.DESTROY
     });
   }
 }
